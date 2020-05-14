@@ -5,12 +5,10 @@
 - длину LineSegment (от новых координат вершины)
 '''
 import Part
-import FreeCAD as App
+from FreeCAD import Vector
 import FreeCADGui as Gui
 
-
-def log(txt):
-    App.Console.PrintMessage(txt + '\n')
+import fc
 
 
 def morphSelection(val=None, dval=0):
@@ -36,9 +34,9 @@ def morphBox(object, subObject, val=None, dval=0):
     else:
         raise Exception('morphBox: Некорректный тип элемента %s' + str(type(subObject)))
 
-    nx = object.Placement.Rotation.multVec( App.Vector(1,0,0) )
-    ny = object.Placement.Rotation.multVec( App.Vector(0,1,0) )
-    nz = object.Placement.Rotation.multVec( App.Vector(0,0,1) )
+    nx = object.Placement.Rotation.multVec( Vector(1,0,0) )
+    ny = object.Placement.Rotation.multVec( Vector(0,1,0) )
+    nz = object.Placement.Rotation.multVec( Vector(0,0,1) )
 
     if abs(direct * nx) > 0.9:
         propName = 'Length'
@@ -50,7 +48,7 @@ def morphBox(object, subObject, val=None, dval=0):
         propName = 'Height'
         axis = 'z'
     else:
-        log('Грань не является внешней (%s, %s, %s)' % (nx, ny, nz))
+        fc.log('Грань не является внешней (%s, %s, %s)' % (nx, ny, nz))
 
     if not val: val = getattr(object, propName).Value
 
@@ -58,6 +56,6 @@ def morphBox(object, subObject, val=None, dval=0):
     setattr(object, propName, val + dval)
 
     if correctBase:
-        log('Position correction %s %.2f' % (axis, -delta))
+        fc.log('Position correction %s %.2f' % (axis, -delta))
         old = getattr(object.Placement.Base, axis)
         setattr(object.Placement.Base, axis, old - delta)

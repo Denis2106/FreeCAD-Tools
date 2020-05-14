@@ -1,7 +1,18 @@
 '''
 FreeCAD utils
 -------------
+log(*msgs) - Вывод сообщения на панель FreeCAD / Report view
+update() - Обновление Gui после изменения положения объектов
 
+isGroup(obj) - Проверка - является ли объект группой FreeCAD
+objectByLabel(name) - Поиск объекта во FreeCAD по label
+getCenterPoint(label) - Находит центральную точку объекта по метке объекта
+
+matrix(matrix) - Создает матрицу типа App.Matrix из матрицы l3d.Matrix3D
+transferPlacement(matrix, placement=None) - Создание App.Placement через матричное преобразование placement
+
+findWidget(path) - Находит виджет по пути определенному в Widget inspector
+setComboStyle(style=None, font=None) - Устанавливает стиль для FreeCAD/Combo view
 '''
 
 import FreeCAD as App
@@ -12,6 +23,7 @@ def log(*msgs):
     for msg in msgs:
         App.Console.PrintLog(msg + '\n')
 
+# Обновление Gui после изменения положения объектов
 def update():
     Gui.updateGui()
 
@@ -28,11 +40,6 @@ def objectByLabel(name):
     if not objects or len(objects)==0:
         raise Exception('Не найден объект с меткой %s' % name)
     return objects[0]
-
-# Определение имени группы во FreeCAD к котому принадлежит объект с меткой
-def getGroupName(objLabel):
-    obj = App.ActiveDocument.getObjectsByLabel(objLabel)[0]
-    groupLabel = obj.InList[0].Label
 
 # Находит центральную точку объекта по метке объекта
 def getCenterPoint(label):
@@ -61,7 +68,7 @@ def transform(objId, matrix, placement=None):
 
     # Преобразуем матрицу к формату App.Matrix
     if isinstance(matrix, l3d.Matrix3D):
-        matrix = FC_matrix(matrix)
+        matrix = matrix(matrix)
 
     if placement == None:
         placement = shape.Placement
